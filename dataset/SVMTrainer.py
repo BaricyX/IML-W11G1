@@ -37,7 +37,7 @@ class SVMTrainer(ClassifierTrainerQ3):
         self.y_test = le.transform(self.test_df['IncidentGrade'])
 
     def train(self):
-        self.model = OneVsRestClassifier(LinearSVC(C=1, tol=1e-3, dual=False), n_jobs=-1)
+        self.model = OneVsRestClassifier(LinearSVC(C=0.1, tol=1e-3, dual=False), n_jobs=-1)
         self.model.fit(self.X_train, self.y_train)
 
     def predict(self):
@@ -54,8 +54,8 @@ numerical_columns = ['DeviceId', 'Sha256', 'IpAddress', 'Url', 'AccountSid', 'Ac
                      'OAuthApplicationId', 'FileName', 'FolderPath', 'ResourceIdName', 'OSFamily',
                      'OSVersion', 'CountryCode', 'State', 'City']
 
-test_file = 'train.csv'
-train_file = 'test.csv'
+test_file = 'test.csv'
+train_file = 'train.csv'
 
 model_no_time = SVMTrainer(
     train_df=pd.read_csv(test_file, low_memory=False, nrows=10000),
@@ -71,8 +71,8 @@ model_no_time.outcome()
 
 
 model_time = SVMTrainer(
-    train_df=pd.read_csv(train_file, low_memory=False, nrows=10000),
-    test_df=pd.read_csv(test_file, low_memory=False, nrows=10000),
+    train_df=pd.read_csv(train_file, low_memory=False),
+    test_df=pd.read_csv(test_file, low_memory=False),
     categorical_features=cat_columns,
     numerical_features=numerical_columns,
     time_feature=True
