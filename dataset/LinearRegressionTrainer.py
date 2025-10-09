@@ -3,7 +3,6 @@ from sklearn.preprocessing import OneHotEncoder
 
 from classifier_trainer import ClassifierTrainerQ3
 
-import pandas as pd
 from numpy import round, clip
 
 from sklearn.linear_model import LinearRegression
@@ -34,8 +33,6 @@ class LinearRegressionTrainer(ClassifierTrainerQ3):
         self.y_predict = self.model.predict(self.X_test)
         self.y_predict = clip(round(self.y_predict), self.y_test.min(), self.y_test.max()).astype(int)
 
-    def outcome(self):
-        pass
 cat_columns = ['Category', 'EntityType', 'EvidenceRole', 'SuspicionLevel', 'LastVerdict',
                'ResourceType', 'Roles', 'AntispamDirection', 'ThreatFamily']
 
@@ -52,6 +49,7 @@ model = LinearRegressionTrainer(
     numerical_features=numerical_columns,
     time_feature=True
 )
+model.prepare_data()
 model.train()
 model.predict()
 model.outcome()
