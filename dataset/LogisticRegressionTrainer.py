@@ -58,7 +58,14 @@ class LogisticRegressionTrainer(ClassifierTrainerQ3):
             df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12)
             df['month_cos'] = np.cos(2 * np.pi * df['month'] / 12)
 
-            self.numerical_features = self.numerical_features + ['hour_sin', 'hour_cos', 'day_sin', 'day_cos', 'month_sin', 'month_cos']
+            self.numerical_features = self.numerical_features + ['hour_sin',
+                                                                 'hour_cos',
+                                                                 'day_sin',
+                                                                 'day_cos',
+                                                                 'month_sin',
+                                                                 'month_cos']
+            # self.numerical_features = self.numerical_features + ['hour_sin', 'hour_cos', 'day_sin', 'day_cos']
+
         return train_df, test_df
 
 
@@ -71,9 +78,12 @@ numerical_columns = ['DeviceId', 'Sha256', 'IpAddress', 'Url', 'AccountSid', 'Ac
                      'OAuthApplicationId', 'FileName', 'FolderPath', 'ResourceIdName', 'OSFamily',
                      'OSVersion', 'CountryCode', 'State', 'City']
 
+test_file = 'test.csv'
+train_file = 'train.csv'
+
 model_no_time = LogisticRegressionTrainer(
-    train_df=pd.read_csv('train.csv', low_memory=False),
-    test_df=pd.read_csv('test.csv', low_memory=False),
+    train_df=pd.read_csv(test_file, low_memory=False),
+    test_df=pd.read_csv(train_file, low_memory=False),
     categorical_features=cat_columns,
     numerical_features=numerical_columns,
     time_feature=False
@@ -85,8 +95,8 @@ model_no_time.outcome()
 
 
 model_time = LogisticRegressionTrainer(
-    train_df=pd.read_csv('train.csv', low_memory=False),
-    test_df=pd.read_csv('test.csv', low_memory=False),
+    train_df=pd.read_csv(test_file, low_memory=False),
+    test_df=pd.read_csv(train_file, low_memory=False),
     categorical_features=cat_columns,
     numerical_features=numerical_columns,
     time_feature=True

@@ -51,7 +51,7 @@ class ClassifierTrainer(ABC):
     def outcome(self):
         accuracy = accuracy_score(self.y_test, self.y_predict)
         recall = recall_score(self.y_test, self.y_predict, average='macro')
-        precision = precision_score(self.y_test, self.y_predict, average='macro')
+        precision = precision_score(self.y_test, self.y_predict, average='macro', zero_division=0)
         f1 = f1_score(self.y_test, self.y_predict, average='macro')
 
         print(f'Accuracy: {accuracy:.4f}')
