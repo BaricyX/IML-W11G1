@@ -37,7 +37,7 @@ class SVMTrainer(ClassifierTrainerQ3):
         self.y_test = le.transform(self.test_df['IncidentGrade'])
 
     def train(self):
-        self.model = OneVsRestClassifier(LinearSVC(C=0.1, tol=1e-3, dual=False), n_jobs=-1)
+        self.model = OneVsRestClassifier(LinearSVC(C=1, tol=1e-3, dual=False), n_jobs=-1)
         self.model.fit(self.X_train, self.y_train)
 
     def predict(self):
