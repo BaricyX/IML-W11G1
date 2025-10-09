@@ -43,24 +43,6 @@ class LogisticRegressionTrainer(ClassifierTrainerQ3):
         self.y_predict = self.model.predict(self.X_test)
         self.y_predict = clip(round(self.y_predict), self.y_test.min(), self.y_test.max()).astype(int)
 
-    def time_features(self, train_df: pd.DataFrame, test_df: pd.DataFrame):
-        for df in [train_df, test_df]:
-            df['Timestamp'] = pd.to_datetime(df['Timestamp'], errors='coerce')
-            df['hour'] = df['Timestamp'].dt.hour
-            df['dayofweek'] = df['Timestamp'].dt.dayofweek
-            df['month'] = df['Timestamp'].dt.month
-            df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24)
-            df['hour_cos'] = np.cos(2 * np.pi * df['hour'] / 24)
-            df['day_sin'] = np.sin(2 * np.pi * df['dayofweek'] / 7)
-            df['day_cos'] = np.cos(2 * np.pi * df['dayofweek'] / 7)
-            df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12)
-            df['month_cos'] = np.cos(2 * np.pi * df['month'] / 12)
-
-        new_cols = ['hour_sin', 'hour_cos', 'day_sin', 'day_cos', 'month_sin', 'month_cos']
-        for c in new_cols:
-            if c not in self.numerical_features:
-                self.numerical_features.append(c)
-        return train_df, test_df
 
 
 cat_columns = ['Category', 'EntityType', 'EvidenceRole', 'SuspicionLevel', 'LastVerdict',

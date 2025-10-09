@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+
+import numpy as np
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
@@ -66,6 +68,21 @@ class ClassifierTrainerQ3(ClassifierTrainer, ABC):
         super().__init__(train_df, test_df, categorical_features, numerical_features)
         self.time_feature = time_feature
 
-    @abstractmethod
     def time_features(self, train_df: pd.DataFrame, test_df: pd.DataFrame):
-        pass
+        for df in [train_df, test_df]:
+            df['Timestamp'] = pd.to_datetime(df['Timestamp'], errors='coerce')
+            df['hour'] = df['Timestamp'].dt.hour
+            df['dayofweek'] = df['Timestamp'].dt.dayofweek
+            df['month'] = df['Timestamp'].dt.month
+            df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24)
+            df['hour_cos'] = np.cos(2 * np.pi * df['hour'] / 24)
+            df['day_sin'] = np.sin(2 * np.pi * df['dayofweek'] / 7)
+            df['day_cos'] = np.cos(2 * np.pi * df['dayofweek'] / 7)
+            df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12)
+            df['month_cos'] = np.cos(2 * np.pi * df['month'] / 12)
+
+        new_cols = ['hour_sin', 'hour_cos', 'day_sin', 'day_cos', 'month_sin', 'month_cos']
+        for c in new_cols:
+            if c not in self.numerical_features:
+                self.numerical_features.append(c)
+        return train_df, test_df
