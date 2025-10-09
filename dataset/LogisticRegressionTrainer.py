@@ -14,20 +14,21 @@ from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 class LogisticRegressionTrainer(ClassifierTrainerQ3):
 
     def prepare_data(self):
-        ohe = OneHotEncoder(handle_unknown='ignore')
-        ohe.fit(self.train_df[self.categorical_features])
-
+        # if considering time feature as part of the model
         if self.time_feature:
             self.train_df, self.test_df = self.time_features(self.train_df, self.test_df)
 
+        ohe = OneHotEncoder(handle_unknown='ignore')
+        ohe.fit(self.train_df[self.categorical_features])
 
         train_data_ohe = ohe.transform(self.train_df[self.categorical_features])
         test_data_ohe = ohe.transform(self.test_df[self.categorical_features])
-        train_data_numerical = csr_matrix(self.train_df[self.numerical_features].fillna(-1).values)
-        test_data_numerical = csr_matrix(self.test_df[self.numerical_features].fillna(-1).values)
-        self.X_train = hstack([train_data_ohe, train_data_numerical])
-        self.X_test = hstack([test_data_ohe, test_data_numerical])
 
+        train_data_num = csr_matrix(self.train_df[self.numerical_features].fillna(-1).values)
+        test_data_num = csr_matrix(self.test_df[self.numerical_features].fillna(-1).values)
+
+        self.X_train = hstack([train_data_ohe, train_data_num])
+        self.X_test = hstack([test_data_ohe, test_data_num])
 
         le = LabelEncoder()
         le.fit(self.train_df['IncidentGrade'])
@@ -35,7 +36,7 @@ class LogisticRegressionTrainer(ClassifierTrainerQ3):
         self.y_test = le.transform(self.test_df['IncidentGrade'])
 
     def train(self):
-        self.model = LogisticRegression()
+        self.model = LogisticRegression(multi_class='multinomial', max_iter=1000, n_jobs=-1)
         self.model.fit(self.X_train, self.y_train)
 
     def predict(self):
@@ -48,24 +49,17 @@ class LogisticRegressionTrainer(ClassifierTrainerQ3):
             df['hour'] = df['Timestamp'].dt.hour
             df['dayofweek'] = df['Timestamp'].dt.dayofweek
             df['month'] = df['Timestamp'].dt.month
-
             df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24)
             df['hour_cos'] = np.cos(2 * np.pi * df['hour'] / 24)
-
             df['day_sin'] = np.sin(2 * np.pi * df['dayofweek'] / 7)
             df['day_cos'] = np.cos(2 * np.pi * df['dayofweek'] / 7)
-
             df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12)
             df['month_cos'] = np.cos(2 * np.pi * df['month'] / 12)
 
-            self.numerical_features = self.numerical_features + ['hour_sin',
-                                                                 'hour_cos',
-                                                                 'day_sin',
-                                                                 'day_cos',
-                                                                 'month_sin',
-                                                                 'month_cos']
-            # self.numerical_features = self.numerical_features + ['hour_sin', 'hour_cos', 'day_sin', 'day_cos']
-
+        new_cols = ['hour_sin', 'hour_cos', 'day_sin', 'day_cos', 'month_sin', 'month_cos']
+        for c in new_cols:
+            if c not in self.numerical_features:
+                self.numerical_features.append(c)
         return train_df, test_df
 
 
@@ -95,8 +89,8 @@ model_no_time.outcome()
 
 
 model_time = LogisticRegressionTrainer(
-    train_df=pd.read_csv(test_file, low_memory=False),
-    test_df=pd.read_csv(train_file, low_memory=False),
+    train_df=pd.read_csv(train_file, low_memory=False),
+    test_df=pd.read_csv(test_file, low_memory=False),
     categorical_features=cat_columns,
     numerical_features=numerical_columns,
     time_feature=True
