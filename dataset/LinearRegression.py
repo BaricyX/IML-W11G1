@@ -1,5 +1,4 @@
 import pandas as pd
-from matplotlib import pyplot as plt
 from numpy import round, clip
 
 from sklearn.linear_model import LinearRegression
@@ -65,15 +64,5 @@ print(f'Macro-F1 Score: {f1:.4f}')
 
 
 # # Plot the scatter plot and regression line
-# plt.figure(figsize=(10, 6))
-# plt.scatter(y_test, y_pred, alpha=0.5, label='Predicted vs Actual')
-# plt.plot([y_test.min(), y_test.max()],
-#          [y_test.min(), y_test.max()],
-#          color='red', linewidth=2, label='Ideal fit')
-# plt.title('Predicted vs Actual Incident Grades')
-# plt.xlabel('Actual Incident Grade')
-# plt.ylabel('Predicted Incident Grade')
-# plt.legend()
-# plt.grid(True)
-# plt.show()
+
 

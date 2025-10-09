@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 
@@ -36,6 +36,18 @@ class ClassifierTrainer(ABC):
     def predict(self):
         pass
 
+    def draw(self):
+        plt.figure(figsize=(10, 6))
+        plt.scatter(self.y_test, self.y_predict, alpha=0.5, label='Predicted vs Actual')
+        plt.plot([self.y_test.min(), self.y_test.max()],
+                 [self.y_test.min(), self.y_test.max()],
+                 color='red', linewidth=2, label='Ideal fit')
+        plt.title('Predicted vs Actual Incident Grades')
+        plt.xlabel('Actual Incident Grade')
+        plt.ylabel('Predicted Incident Grade')
+        plt.legend()
+        plt.grid(True)
+        plt.show()
     def outcome(self):
         accuracy = accuracy_score(self.y_test, self.y_predict)
         recall = recall_score(self.y_test, self.y_predict, average='macro')
@@ -53,3 +65,7 @@ class ClassifierTrainerQ3(ClassifierTrainer, ABC):
                  categorical_features: list, numerical_features: list, time_feature: bool):
         super().__init__(train_df, test_df, categorical_features, numerical_features)
         self.time_feature = time_feature
+
+    @abstractmethod
+    def time_features(self, train_df: pd.DataFrame, test_df: pd.DataFrame):
+        pass
