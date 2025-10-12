@@ -16,8 +16,8 @@ numerical_columns = ['DeviceId', 'Sha256', 'IpAddress', 'Url', 'AccountSid', 'Ac
                      'OSVersion', 'CountryCode', 'State', 'City']
 
 # read dataset
-train_data = pd.read_csv('train.csv', low_memory=False)  # read a few rows to start
-test_data = pd.read_csv('test.csv', low_memory=False)  # read a few rows to start
+train_data = pd.read_csv('../dataset/train.csv', low_memory=False)  # read a few rows to start
+test_data = pd.read_csv('../dataset/test.csv', low_memory=False)  # read a few rows to start
 
 # pre process data
 ohe = OneHotEncoder(handle_unknown='ignore')

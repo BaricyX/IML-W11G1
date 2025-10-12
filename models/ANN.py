@@ -17,8 +17,8 @@ numerical_columns = ['DeviceId', 'Sha256', 'IpAddress', 'Url', 'AccountSid', 'Ac
 
 
 def process_data():
-    train_data = pd.read_csv('train.csv', nrows=10000)  # read a few rows to start
-    test_data = pd.read_csv('test.csv', nrows=10000)  # read a few rows to start
+    train_data = pd.read_csv('../dataset/train.csv', nrows=10000)  # read a few rows to start
+    test_data = pd.read_csv('../dataset/test.csv', nrows=10000)  # read a few rows to start
 
     ohe = OneHotEncoder(handle_unknown='ignore')
     ohe.fit(train_data[cat_columns])

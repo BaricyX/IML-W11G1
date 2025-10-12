@@ -7,11 +7,12 @@ from numpy import round, clip
 import numpy as np
 
 
-from sklearn.linear_model import LogisticRegression
 from scipy.sparse import hstack, csr_matrix
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+from sklearn.svm import LinearSVC
+from sklearn.multiclass import OneVsRestClassifier
 
-class LogisticRegressionTrainer(ClassifierTrainerQ3):
+class SVMTrainer(ClassifierTrainerQ3):
 
     def prepare_data(self):
         # if considering time feature as part of the model
@@ -36,13 +37,12 @@ class LogisticRegressionTrainer(ClassifierTrainerQ3):
         self.y_test = le.transform(self.test_df['IncidentGrade'])
 
     def train(self):
-        self.model = LogisticRegression(multi_class='multinomial', max_iter=1000, n_jobs=-1)
+        self.model = OneVsRestClassifier(LinearSVC(C=1, tol=1e-3, dual=False), n_jobs=-1)
         self.model.fit(self.X_train, self.y_train)
 
     def predict(self):
         self.y_predict = self.model.predict(self.X_test)
         self.y_predict = clip(round(self.y_predict), self.y_test.min(), self.y_test.max()).astype(int)
-
 
 
 cat_columns = ['Category', 'EntityType', 'EvidenceRole', 'SuspicionLevel', 'LastVerdict',
@@ -54,12 +54,12 @@ numerical_columns = ['DeviceId', 'Sha256', 'IpAddress', 'Url', 'AccountSid', 'Ac
                      'OAuthApplicationId', 'FileName', 'FolderPath', 'ResourceIdName', 'OSFamily',
                      'OSVersion', 'CountryCode', 'State', 'City']
 
-test_file = 'test.csv'
-train_file = 'train.csv'
+test_file = '../dataset/test.csv'
+train_file = '../dataset/train.csv'
 
-model_no_time = LogisticRegressionTrainer(
-    train_df=pd.read_csv(test_file, low_memory=False),
-    test_df=pd.read_csv(train_file, low_memory=False),
+model_no_time = SVMTrainer(
+    train_df=pd.read_csv(test_file, low_memory=False, nrows=10000),
+    test_df=pd.read_csv(train_file, low_memory=False, nrows=10000),
     categorical_features=cat_columns,
     numerical_features=numerical_columns,
     time_feature=False
@@ -70,7 +70,7 @@ model_no_time.predict()
 model_no_time.outcome()
 
 
-model_time = LogisticRegressionTrainer(
+model_time = SVMTrainer(
     train_df=pd.read_csv(train_file, low_memory=False),
     test_df=pd.read_csv(test_file, low_memory=False),
     categorical_features=cat_columns,
