@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-
 def stratified_sample(df: pd.DataFrame, by: str, n_total: int, seed: int) -> pd.DataFrame:
     # Return a deterministic stratified sample matching the class distribution in column `by` given the seed.
     rng = np.random.default_rng(seed)
@@ -25,7 +24,7 @@ def stratified_sample(df: pd.DataFrame, by: str, n_total: int, seed: int) -> pd.
         want = min(want, len(sub_df))
         if want > 0:
             # per-class seed for reproducibility
-            sub_seed = int(rng.integers(0, 2 ** 32 - 1))
+            sub_seed = int(rng.integers(0, 2**32 - 1))
             parts.append(sub_df.sample(n=want, random_state=sub_seed))
 
     # concat and final shuffle
@@ -34,17 +33,16 @@ def stratified_sample(df: pd.DataFrame, by: str, n_total: int, seed: int) -> pd.
 
     return out
 
-
 def main():
     # sample → save → split train/test (stratified by IncidentGrade) → save
     ap = argparse.ArgumentParser()
     ap.add_argument("--in", dest="input_csv", default="GUIDE_Test.csv")
-    ap.add_argument("--out-sample", default="1sample_100000.csv")
-    ap.add_argument("--out-train", default="1train.csv")
-    ap.add_argument("--out-test", default="1test.csv")
+    ap.add_argument("--out-sample", default="sample_100000.csv")
+    ap.add_argument("--out-train",  default="train.csv")
+    ap.add_argument("--out-test",   default="test.csv")
     ap.add_argument("--sample-size", type=int, default=100000)
-    ap.add_argument("--train-size", type=int, default=80000)
-    ap.add_argument("--test-size", type=int, default=20000)
+    ap.add_argument("--train-size",  type=int, default=80000)
+    ap.add_argument("--test-size",   type=int, default=20000)
     ap.add_argument("--seed", type=int, default=2025)
     args = ap.parse_args()
 
@@ -64,7 +62,6 @@ def main():
     )
     train_df.to_csv(args.out_train, index=False)
     test_df.to_csv(args.out_test, index=False)
-
 
 if __name__ == "__main__":
     main()
