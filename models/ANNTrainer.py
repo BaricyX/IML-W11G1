@@ -43,7 +43,7 @@ class ANNTrainer(ClassifierTrainerQ3):
             solver="adam",
             learning_rate_init=1e-3,
             alpha=1e-4,
-            batch_size=512,
+            batch_size=256,
             max_iter=400,
             random_state=2025
         )
