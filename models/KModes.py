@@ -1,17 +1,11 @@
 import pandas as pd
-from sklearn.cluster import KMeans
-# import MultiLabelBinarizer, so that we can take the multi-class column Mitre Technique
-# and binarize it to encode for each technique (1 = technique occurs, 0 = technique doesn't)
+from kmodes.kmodes import KModes
 from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.metrics import silhouette_score, silhouette_samples
 import re
 from collections import Counter
 from itertools import combinations
 
-# have to do this to reduce dimensions or else plots look awful
-from sklearn.decomposition import PCA
-
-class KMeansTrainer:
+class KModesTrainer:
 
     def __init__(self, df: pd.DataFrame):
         self.df = df
@@ -72,43 +66,38 @@ class KMeansTrainer:
         print(f"encoded {len(self.technique_classes)} unique mitre techniques.")
         return self.X
 
-
     def train(self, n_clusters: int):
-        self.model = KMeans(n_clusters=n_clusters, random_state=42)
+        self.model = KModes(n_clusters=n_clusters, random_state=42)
         self.labels = self.model.fit_predict(self.X)
 
         self.df["Cluster"] = self.labels # add back in
         print(f"train complete")
 
-    # scikit-learn documentation for selecting best k-value:
-    # https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_silhouette_analysis.html#sphx-glr-auto-examples-cluster-plot-kmeans-silhouette-analysis-py
-    def silhouette_analysis(self, k_values, save=True):
-        X = self.X
-        best_k = None
-        best_score = -1
+    def find_best(self, k_values=range(2,9)):
+        sum_of_distances = []
+        for k in k_values:
+            kmodes = KModes(n_clusters=k, n_init=5, random_state=42, verbose=0)
+            kmodes.fit(self.X)
+            distance = kmodes.cost_
+            sum_of_distances.append(distance)
+            print(f"k = {k}, cost = {distance:.2f}")
 
-        for n_clusters in k_values:
-            print(f"evaluating k={n_clusters}...")
+        # now have to figure out how much the distance sum drops when k is increased
+        decreases = []
+        for i in range(1, len(sum_of_distances)):
+            decrease = sum_of_distances[i - 1] - sum_of_distances[i]  # previous cost - current cost
+            decreases.append(decrease)
 
-            # start KMeans with n cluster value and random state
-            model = KMeans(n_clusters=n_clusters, random_state=42)
-            model_labels = model.fit_predict(X)
+        print("Distance drops between each k:", decreases)
 
-            # the average value for all samples
-            silhouette_avg = silhouette_score(X, model_labels)
-            # silhouette scores
-            sample_silhouette_values = silhouette_samples(X, model_labels)
-            print(f"average silhouette score: {silhouette_avg:.4f}---------------------------")
+        # find where it stops being beneficial to increase k
+        smallest_drop_index = decreases.index(min(decreases))
+        best_k = list(k_values)[smallest_drop_index + 1]
 
-            # if this k has a higher score than previous k score, store it to return
-            if silhouette_avg > best_score:
-                best_score = silhouette_avg
-                best_k = n_clusters
-
-        print(f"\nBest number of clusters: {best_k} (silhouette score = {best_score:.4f})")
+        print(f"Best k: {best_k}")
         return best_k
 
-    def show_patterns(self, top_n=10, pattern_size=5):
+    def show_patterns(self, top_n=10, pattern_size=2):
         # for each cluster found, print the most common MITRE techniques used together
         # pattern size = max number of MITRE techniques that occur together frequently
         cluster_ids = sorted(self.df["Cluster"].unique())
@@ -142,10 +131,10 @@ class KMeansTrainer:
 
 if __name__ == "__main__":
     df = pd.read_csv('dataset/train.csv')
-    kmeans = KMeansTrainer(df)
-    encoded_X = kmeans.prepare_data()
+    kmodesM = KModesTrainer(df)
+    encoded_X = kmodesM.prepare_data()
 
     # calculate the best k value
-    best_k = kmeans.silhouette_analysis(k_values=range(2,9))
-    kmeans.train(n_clusters=best_k)
-    kmeans.show_patterns(top_n=10)
+    best_k = kmodesM.find_best(k_values=range(2,9))
+    kmodesM.train(n_clusters=best_k)
+    kmodesM.show_patterns(top_n=10)
