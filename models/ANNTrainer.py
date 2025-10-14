@@ -44,9 +44,8 @@ class ANNTrainer(ClassifierTrainerQ3):
             learning_rate_init=1e-3,
             alpha=1e-4,
             batch_size=512,
-            max_iter=300,
-            random_state=2025,
-            verbose=True
+            max_iter=400,
+            random_state=2025
         )
 
         self.model.fit(Xtr, self.y_train)
