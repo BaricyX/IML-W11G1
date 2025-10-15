@@ -1,0 +1,11 @@
+# Environment & Setup
+# This project uses a Python virtual environment.To install all dependencies, run:
+#     python -m pip install -r Requirements.txt
+# or
+#     py -m pip install -r Requirements.txt
+
+numpy
+pandas
+scipy
+scikit-learn
+matplotlib
