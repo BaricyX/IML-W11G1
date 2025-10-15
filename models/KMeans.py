@@ -8,9 +8,6 @@ import re
 from collections import Counter
 from itertools import combinations
 
-# have to do this to reduce dimensions or else plots look awful
-from sklearn.decomposition import PCA
-
 class KMeansTrainer:
 
     def __init__(self, df: pd.DataFrame):
@@ -108,44 +105,60 @@ class KMeansTrainer:
         print(f"\nBest number of clusters: {best_k} (silhouette score = {best_score:.4f})")
         return best_k
 
-    def show_patterns(self, top_n=10, pattern_size=5):
-        # for each cluster found, print the most common MITRE techniques used together
-        # pattern size = max number of MITRE techniques that occur together frequently
-        cluster_ids = sorted(self.df["Cluster"].unique())
+    def show_patterns(self, top_n=10):
+        pattern_sizes = [2, 3, 4]
+        risk_df = pd.read_csv("technique_risk_scores.csv")
+        all_results = []
+        # For each cluster found, print the most common MITRE techniques used together
+        # pattern_size = max number of MITRE techniques that occur together frequently
 
-        for cluster_id in cluster_ids:
-            print(f"Cluster {cluster_id}:")
+        for size in pattern_sizes:
+            cluster_ids = sorted(self.df["Cluster"].unique())
+            for cluster_id in cluster_ids:
+                # Go through one cluster incidents at a time
+                subset = self.df[self.df["Cluster"] == cluster_id]
+                pattern_counter = Counter()
 
-            # go through one cluster incidents at ta time
-            subset = self.df[self.df["Cluster"] == cluster_id]
+                for technique_list in subset[self.col]:
+                    # Only use incidents that have enough techniques (no patterns if technique list too low)
+                    if len(technique_list) < size:
+                        continue
+                    # Create combinations of the chosen size (using 3)
+                    patterns = combinations(sorted(technique_list), size)
+                    pattern_counter.update(patterns)
 
-            pattern_counter = Counter()
+                most_common_patterns = pattern_counter.most_common(top_n)
 
-            for technique_list in subset[self.col]:
-                # only use incidents that have enough techniques (no patterns if technique list too low)
-                if len(technique_list) < pattern_size:
-                    continue
+                # Now finding the associated risk rankings with each pattern
+                ranked_patterns = []
+                for combo, count in most_common_patterns:
+                    # Get risk scores for each technique in the combo
+                    scores = []
+                    for t in combo:
+                        # Find the technique column
+                        match = risk_df[risk_df["Technique_ID"] == t]
+                        if not match.empty:
+                            scores.append(match["risk_score_norm"].values[0])
+                    if scores:
+                        avg_risk = sum(scores) / len(scores)
+                    else:
+                        avg_risk = 0
+                    # Add the data for the row
+                    all_results.append({ "pattern_size": size, "cluster": cluster_id, "techniques": " + ".join(combo),
+                                         "occurrences": count, "avg_risk_score": round(avg_risk, 5) })
 
-                # create combinations of the chosen size (using 3)
-                patterns = combinations(sorted(technique_list), pattern_size)
-                pattern_counter.update(patterns)
-
-            most_common_patterns = pattern_counter.most_common(top_n)
-
-            print(f"Top {top_n} technique combinations (size={pattern_size}):")
-            for combo, count in most_common_patterns:
-                technique_combination = " + ".join(combo)
-                print(f"  {technique_combination}: {count} times")
-
-            print(f"Total unique combinations of size {pattern_size}: {len(pattern_counter)}")
-
+        results = pd.DataFrame(all_results)
+        results = results.sort_values(by=["avg_risk_score", "occurrences"], ascending=[False, False])
+        results.to_csv("mitre_pattern_results.csv")
 
 if __name__ == "__main__":
-    df = pd.read_csv('dataset/train.csv')
+    df = pd.read_csv('../dataset/train.csv')
     kmeans = KMeansTrainer(df)
     encoded_X = kmeans.prepare_data()
 
     # calculate the best k value
     best_k = kmeans.silhouette_analysis(k_values=range(2,9))
     kmeans.train(n_clusters=best_k)
-    kmeans.show_patterns(top_n=10)
+
+    kmeans.show_patterns()
+
