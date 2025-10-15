@@ -36,7 +36,7 @@ class LogisticRegressionTrainer(ClassifierTrainerQ3):
         self.y_test = le.transform(self.test_df['IncidentGrade'])
 
     def train(self):
-        self.model = LogisticRegression(multi_class='multinomial', max_iter=1000, n_jobs=-1)
+        self.model = LogisticRegression(multi_class='multinomial', max_iter=2000, n_jobs=-1)
         self.model.fit(self.X_train, self.y_train)
 
     def predict(self):
