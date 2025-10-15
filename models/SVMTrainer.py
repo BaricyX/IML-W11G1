@@ -44,7 +44,6 @@ class SVMTrainer(ClassifierTrainerQ3):
         self.y_predict = self.model.predict(self.X_test)
         self.y_predict = clip(round(self.y_predict), self.y_test.min(), self.y_test.max()).astype(int)
 
-
 cat_columns = ['Category', 'EntityType', 'EvidenceRole', 'SuspicionLevel', 'LastVerdict',
                'ResourceType', 'Roles', 'AntispamDirection', 'ThreatFamily']
 
@@ -68,7 +67,6 @@ model_no_time.prepare_data()
 model_no_time.train()
 model_no_time.predict()
 model_no_time.outcome()
-
 
 model_time = SVMTrainer(
     train_df=pd.read_csv(train_file, low_memory=False),

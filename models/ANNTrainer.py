@@ -38,14 +38,17 @@ class ANNTrainer(ClassifierTrainerQ3):
         Xtr = self._scaler.fit_transform(Xtr)
 
         self.model = MLPClassifier(
-            hidden_layer_sizes=(128,64),
-            activation="relu",
-            solver="adam",
-            learning_rate_init=1e-3,
-            alpha=1e-4,
-            batch_size=256,
-            max_iter=400,
-            random_state=2025
+        hidden_layer_sizes=(256,128,64),
+        activation="relu",
+        solver="adam",
+        learning_rate_init=1e-3,
+        alpha=1e-4,
+        batch_size=1024,
+        max_iter=200,
+        early_stopping=True,
+        validation_fraction=0.1,
+        n_iter_no_change=10,
+        random_state=2025
         )
 
         self.model.fit(Xtr, self.y_train)

@@ -42,7 +42,7 @@ def process_data():
 
 
 def train_model(X_train, y_train):
-    model = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=0)
+    model = RandomForestClassifier(n_estimators=400, max_depth=16, random_state=2)
     model.fit(X_train, y_train)
 
     return model
