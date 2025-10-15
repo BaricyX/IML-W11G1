@@ -3,9 +3,10 @@ COMP90049 Introduction to Machine Learning - Assignment2
 
 ## Directory
 ```
-├── README.md 
+├── README.md
 │
 ├── dataset/                          
+│   ├── sample_100000.csv
 │   ├── train.csv
 │   └── test.csv
 │
@@ -13,16 +14,15 @@ COMP90049 Introduction to Machine Learning - Assignment2
 │   ├── dataset.py
 │   ├── timestamp.py
 │   ├── DataProcessStrategy.py
+│   ├── mitre_feature_engineering.py
 │   └── Data Reproduction Guide.md
 │
-├── models/
+└── models/
 │   ├── classifier_trainer.py
 │   ├── LogisticRegressionTrainer.py
 │   ├── SVMTrainer.py
-│   ├── ANN.py
-│   ├── LogisticRegression.py
-│   └── KMeansTrainer.py
+│   ├── ANNTrainer.py
+│   ├── KMeans.py
+│   └── ResultQ3.py
 │
-└── outputs/
-    ├── 
-```
+└── Requirements.txt
