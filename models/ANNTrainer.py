@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 
 from scipy.sparse import hstack, csr_matrix
@@ -58,40 +57,3 @@ class ANNTrainer(ClassifierTrainerQ3):
         Xte = self._scaler.transform(Xte)
 
         self.y_predict = self.model.predict(Xte)
-
-cat_columns = ['Category', 'EntityType', 'EvidenceRole', 'SuspicionLevel', 'LastVerdict',
-               'ResourceType', 'Roles', 'AntispamDirection', 'ThreatFamily']
-
-numerical_columns = ['DeviceId', 'Sha256', 'IpAddress', 'Url', 'AccountSid', 'AccountUpn', 'AccountObjectId',
-                     'AccountName', 'DeviceName', 'NetworkMessageId', 'EmailClusterId', 'RegistryKey',
-                     'RegistryValueName', 'RegistryValueData', 'ApplicationId', 'ApplicationName',
-                     'OAuthApplicationId', 'FileName', 'FolderPath', 'ResourceIdName', 'OSFamily',
-                     'OSVersion', 'CountryCode', 'State', 'City']
-
-test_file = '../dataset/test.csv'
-train_file = '../dataset/train.csv'
-
-model_no_time = ANNTrainer(
-    train_df=pd.read_csv(train_file, low_memory=False),
-    test_df=pd.read_csv(test_file, low_memory=False),
-    categorical_features=cat_columns,
-    numerical_features=numerical_columns,
-    time_feature=False
-)
-model_no_time.prepare_data()
-model_no_time.train()
-model_no_time.predict()
-model_no_time.outcome()
-
-# use time feature
-model_time = ANNTrainer(
-    train_df=pd.read_csv(train_file, low_memory=False),
-    test_df=pd.read_csv(test_file, low_memory=False),
-    categorical_features=cat_columns,
-    numerical_features=numerical_columns,
-    time_feature=True
-)
-model_time.prepare_data()
-model_time.train()
-model_time.predict()
-model_time.outcome()

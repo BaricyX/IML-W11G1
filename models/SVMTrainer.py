@@ -1,11 +1,6 @@
-import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
-
 from classifier_trainer import ClassifierTrainerQ3
 
 from numpy import round, clip
-import numpy as np
-
 
 from scipy.sparse import hstack, csr_matrix
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
@@ -43,39 +38,3 @@ class SVMTrainer(ClassifierTrainerQ3):
     def predict(self):
         self.y_predict = self.model.predict(self.X_test)
         self.y_predict = clip(round(self.y_predict), self.y_test.min(), self.y_test.max()).astype(int)
-
-cat_columns = ['Category', 'EntityType', 'EvidenceRole', 'SuspicionLevel', 'LastVerdict',
-               'ResourceType', 'Roles', 'AntispamDirection', 'ThreatFamily']
-
-numerical_columns = ['DeviceId', 'Sha256', 'IpAddress', 'Url', 'AccountSid', 'AccountUpn', 'AccountObjectId',
-                     'AccountName', 'DeviceName', 'NetworkMessageId', 'EmailClusterId', 'RegistryKey',
-                     'RegistryValueName', 'RegistryValueData', 'ApplicationId', 'ApplicationName',
-                     'OAuthApplicationId', 'FileName', 'FolderPath', 'ResourceIdName', 'OSFamily',
-                     'OSVersion', 'CountryCode', 'State', 'City']
-
-test_file = '../dataset/test.csv'
-train_file = '../dataset/train.csv'
-
-model_no_time = SVMTrainer(
-    train_df=pd.read_csv(test_file, low_memory=False, nrows=10000),
-    test_df=pd.read_csv(train_file, low_memory=False, nrows=10000),
-    categorical_features=cat_columns,
-    numerical_features=numerical_columns,
-    time_feature=False
-)
-model_no_time.prepare_data()
-model_no_time.train()
-model_no_time.predict()
-model_no_time.outcome()
-
-model_time = SVMTrainer(
-    train_df=pd.read_csv(train_file, low_memory=False),
-    test_df=pd.read_csv(test_file, low_memory=False),
-    categorical_features=cat_columns,
-    numerical_features=numerical_columns,
-    time_feature=True
-)
-model_time.prepare_data()
-model_time.train()
-model_time.predict()
-model_time.outcome()
