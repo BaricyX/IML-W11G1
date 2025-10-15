@@ -18,8 +18,10 @@ class LogisticRegressionTrainer(ClassifierTrainerQ3):
         if self.time_feature:
             self.train_df, self.test_df = self.time_features(self.train_df, self.test_df)
 
+        #convert categorical features into numerical features
         ohe = OneHotEncoder(handle_unknown='ignore')
         ohe.fit(self.train_df[self.categorical_features])
+
 
         train_data_ohe = ohe.transform(self.train_df[self.categorical_features])
         test_data_ohe = ohe.transform(self.test_df[self.categorical_features])
@@ -36,7 +38,7 @@ class LogisticRegressionTrainer(ClassifierTrainerQ3):
         self.y_test = le.transform(self.test_df['IncidentGrade'])
 
     def train(self):
-        self.model = LogisticRegression(multi_class='multinomial', max_iter=2000, n_jobs=-1)
+        self.model = LogisticRegression(max_iter=200, n_jobs=-1)
         self.model.fit(self.X_train, self.y_train)
 
     def predict(self):
