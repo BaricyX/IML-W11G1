@@ -99,8 +99,7 @@ df["Technique_ID"] = df["external_references"].apply(extract_attack_id)
 
 # Keep only the columns needed for determining detection, severity, mitigation potential and difficulty scores
 keep_columns = ["Technique_ID", "name", "description", "x_mitre_impact_type", "x_mitre_detection",
-                "x_mitre_defense_bypassed", "x_mitre_permissions_required", "x_mitre_data_sources",
-                "x_mitre_effective_permissions"]
+                "x_mitre_defense_bypassed", "x_mitre_permissions_required", "x_mitre_data_sources"]
 df = df[keep_columns]
 # As a fallback, drop rows that are missing Technique IDs
 df = df.dropna(subset="Technique_ID")
