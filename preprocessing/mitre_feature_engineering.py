@@ -8,6 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # HELPER FUNCTIONS
 # This makes the column into a stringified list of dicts, so can extract the technique id safely (ex: T1110)
+# Citation: I had to use ChatGPT to help me understand how to use ast and correctly identify columns. It was used for this function, then I was able to write the remaining functions on my own.
 def extract_attack_id(refs):
     try:
         items = ast.literal_eval(refs)
