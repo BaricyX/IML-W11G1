@@ -44,7 +44,7 @@ class LogisticRegressionTrainer(ClassifierTrainerQ3):
         best_score, best_c = -1.0, None
         for c in c_grid:
             clf = LogisticRegression(
-                solver='saga',
+                solver="lbfgs",
                 penalty="l2",
                 max_iter=8000,
                 tol=1e-3,
@@ -67,7 +67,7 @@ class LogisticRegressionTrainer(ClassifierTrainerQ3):
     def train(self):
         C = self.best_c if hasattr(self, "best_c") and self.best_c is not None else 1.0
         self.model = LogisticRegression(
-            solver='saga',
+            solver="lbfgs",
             penalty="l2",
             max_iter=8000,
             tol=1e-3,
