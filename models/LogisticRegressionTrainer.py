@@ -61,7 +61,7 @@ class LogisticRegressionTrainer(ClassifierTrainerQ3):
                 best_score, best_c = mean_score, c
 
         self.best_c = best_c
-        print(f"[INFO] time_feature={self.time_feature} : best C = {self.best_c} ('Accuracy' = {best_score:.4f})")
+        print(f"time_feature={self.time_feature} : best C = {self.best_c} ('Accuracy' = {best_score:.4f})")
         return self.best_c, best_score
 
     def train(self):
