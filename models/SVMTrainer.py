@@ -5,10 +5,9 @@ from numpy import round, clip
 from scipy.sparse import hstack, csr_matrix
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.svm import LinearSVC
-from sklearn.multiclass import OneVsRestClassifier
+from sklearn.model_selection import StratifiedKFold, cross_val_score
 
 class SVMTrainer(ClassifierTrainerQ3):
-
     def prepare_data(self):
         # if considering time feature as part of the model
         if self.time_feature:
@@ -31,8 +30,31 @@ class SVMTrainer(ClassifierTrainerQ3):
         self.y_train = le.transform(self.train_df['IncidentGrade'])
         self.y_test = le.transform(self.test_df['IncidentGrade'])
 
+        self.best_c = None
+
+# Perform cross-validation using StratifiedKFold with accuracy, selecting the optimal C value.
+    def find_best_c(self, c_grid=None, cv_splits=5, random_state=2025):
+        if c_grid is None:
+            c_grid = [0.03, 0.1, 0.3, 1.0, 3.0]
+
+        skf = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=random_state)
+
+        best_score, best_c = -1.0, None
+        for c in c_grid:
+            clf = LinearSVC(C=c, tol=1e-3, dual=False)
+            scores = cross_val_score(clf, self.X_train, self.y_train, cv=skf, scoring='accuracy')
+            mean_score = scores.mean()
+            if mean_score > best_score:
+                best_score, best_c = mean_score, c
+
+        self.best_c = best_c
+        print(f"time_feature={self.time_feature} : best C = {self.best_c} ('Accuracy' = {best_score:.4f})")
+        return self.best_c, best_score
+
+
     def train(self):
-        self.model = OneVsRestClassifier(LinearSVC(C=1, tol=1e-3, dual=False), n_jobs=-1)
+        C = self.best_c
+        self.model = LinearSVC(C=C, tol=1e-3, dual=False)
         self.model.fit(self.X_train, self.y_train)
 
     def predict(self):
