@@ -62,14 +62,15 @@ python preprocessing/dataset.py --input-csv GUIDE_Test.csv \
 ```
 
 - `preprocessing/DataProcessStrategy.py` — Strategy helpers for (with/without) time features.
-   You don’t run this file; it’s imported by the trainers.
+   It’s imported by the trainers.
 - `preprocessing/mitre_feature_engineering.py` — Build MITRE risk features (expects `all_techniques.csv` in the same folder).
 
 ```bash
-cd preprocessing
 python mitre_feature_engineering.py    
 ```
 
+- `preprocessing/Data Reproduction Guide.md` — Steps and command to reproduce stratified sample and train/test split.
+  
 - `models/classifier_trainer.py` — Base classes and utilities for all trainers.
    You don’t run this file; it’s imported by the trainers.
 - `models/KMeans.py` — Cluster MITRE technique patterns on the train set.
@@ -95,5 +96,3 @@ python models/ResultQ3.py
 ```bash
 python -m output.TechniquePatternPlotting
 ```
-
-
