@@ -73,7 +73,7 @@ python mitre_feature_engineering.py
   
 - `models/classifier_trainer.py` — Base classes and utilities for all trainers.
    You don’t run this file; it’s imported by the trainers.
-- `models/KMeans.py` — Cluster MITRE technique patterns on the train set.
+- `models/KMeans.py` — Cluster MITRE technique patterns on the train set (expects the resulting csv from `preprocessing/mitre_feature_engineering.py` in the same folder, which is hardcoded in, this can be changed to suit the user).
 
 ```bash
 python models/KMeans.py                
@@ -91,7 +91,7 @@ python models/KMeans.py
 python models/ResultQ3.py             
 ```
 
-- `output/TechniquePatternPlotting.py` — Plot MITRE technique risk patterns.
+- `output/TechniquePatternPlotting.py` — Plot MITRE technique risk patterns and the resulting clusters.
 
 ```bash
 python -m output.TechniquePatternPlotting
