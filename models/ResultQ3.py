@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.metrics import (
-    confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
-)
+from sklearn.metrics import ( confusion_matrix, accuracy_score, precision_score, recall_score, f1_score )
 
 # import the 3 models
 from ANNTrainer import ANNTrainer
@@ -33,9 +31,18 @@ def run_trainer(TrainerClass, use_time):
         time_feature=use_time
     )
     model.prepare_data()
+
+    # ANNTrainer：find_best_alpha()
+    if hasattr(model, "find_best_alpha") and callable(getattr(model, "find_best_alpha")):
+        model.find_best_alpha()
+
+    # SVM / Logistic Regression：find_best_c()
+    if hasattr(model, "find_best_c") and callable(getattr(model, "find_best_c")):
+        model.find_best_c()
+
     model.train()
     model.predict()
-    return model  # has y_test, y_predict
+    return model
 
 # Compute metrics
 def compute_metrics(y_true, y_pred):
