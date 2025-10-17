@@ -70,7 +70,17 @@ python mitre_feature_engineering.py
 ```
 
 - `preprocessing/Data Reproduction Guide.md` — Steps and command to reproduce stratified sample and train/test split.
-  
+- `models/DecisionTree.py` — Main driver for running decision tree clasifier for feature importance comparison for RQ1 (reads `dataset/train.csv`, `dataset/test.csv`).
+- `models/NaiveBayes.py` — — Main driver for running Naive Bayes classifier for mutual information comparison for RQ1 (reads `dataset/train.csv`, `dataset/test.csv`).
+
+```bash
+python models/DecisionTree.py                
+```
+
+```bash
+python models/NaiveBayes.py                
+```
+
 - `models/classifier_trainer.py` — Base classes and utilities for all trainers.
    You don’t run this file; it’s imported by the trainers.
 - `models/KMeans.py` — Cluster MITRE technique patterns on the train set (expects the resulting csv from `preprocessing/mitre_feature_engineering.py` in the same folder, which is hardcoded in, this can be changed to suit the user).
